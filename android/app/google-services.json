@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "373603953271",
+    "project_id": "geomemo-bf6e2",
+    "storage_bucket": "geomemo-bf6e2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:373603953271:android:f6be57c55dce415b30b472",
+        "android_client_info": {
+          "package_name": "com.geomemo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "373603953271-ls82vgl6l4kvh4e6vgk0i156aqe0q65o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6NaJqlmt0wMVg58Hz8EKt-G4wv7RpP8o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "373603953271-ls82vgl6l4kvh4e6vgk0i156aqe0q65o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

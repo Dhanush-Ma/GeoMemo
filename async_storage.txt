@@ -1,0 +1,2 @@
+ON_BOARD = "true"
+AUTH_ID = "user id"
