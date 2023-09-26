@@ -8,28 +8,23 @@ import {
   TouchableOpacity,
   StatusBar,
   KeyboardAvoidingView,
-  Keyboard,
   TouchableWithoutFeedback,
-  Image,
   ActivityIndicator,
+  Image,
 } from 'react-native';
+import {SvgUri} from 'react-native-svg';
 import {useState, useEffect} from 'react';
-import FontText from '../Components/FontText';
-import firestore from '@react-native-firebase/firestore';
+import FontText from '../../Components/FontText';
+import firestore, {firebase} from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
-import {checkInitialFormErrors} from '../Utils/checkInitialFormErrors';
-import ErrorModal from '../Components/ErrorModal';
-import {MotiImage} from 'moti';
-import {useAuthContext} from '../Contexts/AuthContext';
-import {useUserContext} from '../Contexts/UserContext';
-import updateAuthIdToStorage from '../Utils/updateAuthIdToStorage';
+import {checkInitialFormErrors} from '../../Utils/checkInitialFormErrors';
+import ErrorModal from '../../Components/ErrorModal';
 
-const Login = ({navigation}) => {
-  const {setAuth} = useAuthContext();
-  const {setUserId} = useUserContext();
+const SignUp = ({navigation}) => {
   const [formData, setFormData] = useState({
+    username: '',
     email: '',
     password: '',
   });
@@ -37,36 +32,41 @@ const Login = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const {width, height} = Dimensions.get('window');
   const [showPass, setShowPass] = useState(false);
+  useEffect(() => {}, []);
 
   const handleChange = (text, attr) => {
     setFormData({...formData, [attr]: text});
   };
 
   const handleSubmit = async () => {
-    Keyboard.dismiss();
-    const error = checkInitialFormErrors(formData, 'login');
+    setLoading(true);
+    const error = checkInitialFormErrors(formData);
     if (error) {
+      setLoading(false);
       setFormError(error);
       return;
     }
-    setLoading(true);
-    const {email, password} = formData;
-    try {
-      const res = await auth().signInWithEmailAndPassword(email, password);
-      const {uid} = res.user;
-      console.log(uid);
-      await updateAuthIdToStorage(uid, setAuth);
-    } catch (err) {
-      console.log(err);
-      if (err.code === 'auth/user-not-found') {
-        setFormError('User not found');
-      }
 
-      if (err.code === 'auth/wrong-password') {
-        setFormError('Wrong Password');
-      }
-    } finally {
+    const {username, email, password} = formData;
+
+    try {
+      const userCredential = await auth().createUserWithEmailAndPassword(
+        email,
+        password,
+      );
+      const user = userCredential.user;
+
       setLoading(false);
+      navigation.navigate('PhoneAuth', {
+        uid: user.uid,
+        email: email,
+        username: username,
+      });
+    } catch (error) {
+      setLoading(false);
+      if (error.code === 'auth/email-already-in-use') {
+        setFormError('Email already in use');
+      }
     }
   };
 
@@ -78,17 +78,32 @@ const Login = ({navigation}) => {
         width={width}
         height={height}
         className="bg-primaryColor flex items-center px-5 justify-center">
-        <View width={250} height={300}>
-          <MotiImage
+        <View
+          className="flex items-center justify-center mb-5"
+          width={250}
+          height={250}>
+          <Image
             style={{width: '100%', height: '100%'}}
-            source={require('../Assets/Login.png')}
+            source={require('../../Assets/signup.gif')}
             resizeMode="contain"
           />
         </View>
         <View className="flex justify-center gap-y-6  w-[95%]">
           <FontText className="text-white text-center text-xl">
-            Welcome back! Log in to access GeoMemo
+            Let's get started to explore GeoMemo
           </FontText>
+          <View className="flex flex-row w-full border-2 border-accentColor2 rounded-[14px] justify-between items-center px-2">
+            <TextInput
+              onChangeText={text => handleChange(text, 'username')}
+              className="text-textColor w-[85%]"
+              cursorColor={'white'}
+              style={[{fontFamily: `Montserrat-Regular`}]}
+              placeholder="Username"
+              placeholderTextColor="white"
+              keyboardType="default"
+            />
+            <FeatherIcon name="user" size={20} color="#fff" />
+          </View>
           <View className="flex flex-row w-full border-2 border-accentColor2 rounded-[14px] justify-between items-center px-2">
             <TextInput
               onChangeText={text => handleChange(text, 'email')}
@@ -137,20 +152,21 @@ const Login = ({navigation}) => {
                   weight="Bold"
                   className="text-center"
                   style={{color: 'white'}}>
-                  LOGIN
+                  SIGN UP
                 </FontText>
               )}
             </View>
           </TouchableOpacity>
           <TouchableWithoutFeedback
             onPress={() => {
-              navigation.navigate('SignUp');
+              console.log('here');
+              navigation.navigate('Login');
             }}>
             <View className="mt-3">
-              <FontText className="text-center italic text-[18px]">
-                Don't have an account?{' '}
+              <FontText className="text-white text-center italic text-[18px]">
+                Already have an account?{' '}
                 <FontText className="italic text-accentColor2 font-bold">
-                  Sign Up
+                  Login here
                 </FontText>
               </FontText>
             </View>
@@ -162,4 +178,4 @@ const Login = ({navigation}) => {
   );
 };
 
-export default Login;
+export default SignUp;

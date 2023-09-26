@@ -3,7 +3,15 @@ module.exports = {
   content: [
     './App.{js,jsx,ts,tsx}',
     './Screens/*.{js,jsx,ts,tsx}',
+    './Screens/AuthScreens/*.{js,jsx,ts,tsx}',
+    './Screens/UserScreens/*.{js,jsx,ts,tsx}',
     './Components/*.{js,jsx,ts,tsx}',
+    './Components/*/**.{js,jsx,ts,tsx}',
+    './Components/Auth/*.{js,jsx,ts,tsx}',
+    './Components/User/*.{js,jsx,ts,tsx}',
+    './Components/OnBoard/*.{js,jsx,ts,tsx}',
+    './Components/Modals/*.{js,jsx,ts,tsx}',
+    './Components/BottomNavbar/*.{js,jsx,ts,tsx}',
     './Stack/*.{js,jsx,ts,tsx}',
   ],
   theme: {
@@ -55,5 +63,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: ['nativewind/babel'],
 };

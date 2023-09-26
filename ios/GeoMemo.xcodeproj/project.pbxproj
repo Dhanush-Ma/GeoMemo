@@ -19,6 +19,8 @@
 		50BC724AD23547248FB6E304 /* Montserrat-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BBB58A8300D14BCAAF20F9EC /* Montserrat-Light.ttf */; };
 		DBEE5192B93847879D6601E9 /* Montserrat-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 08058E4D9AB54BEBB862A8BC /* Montserrat-Medium.ttf */; };
 		BF8EF386F21C41C4B9C5AD0C /* Montserrat-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 02B6F43FA47545529EF74050 /* Montserrat-Regular.ttf */; };
+		F80100518A1F4FEAADA1C6C8 /* CroissantOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 876C50DBE84544A0994E09CE /* CroissantOne-Regular.ttf */; };
+		F7ACCC0BEA064F18A0549CD4 /* SFPro-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B96F4E34FFA542A2A271DBCC /* SFPro-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +56,8 @@
 		BBB58A8300D14BCAAF20F9EC /* Montserrat-Light.ttf */ = {isa = PBXFileReference; name = "Montserrat-Light.ttf"; path = "../Assets/fonts/Montserrat-Light.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		08058E4D9AB54BEBB862A8BC /* Montserrat-Medium.ttf */ = {isa = PBXFileReference; name = "Montserrat-Medium.ttf"; path = "../Assets/fonts/Montserrat-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		02B6F43FA47545529EF74050 /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; name = "Montserrat-Regular.ttf"; path = "../Assets/fonts/Montserrat-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		876C50DBE84544A0994E09CE /* CroissantOne-Regular.ttf */ = {isa = PBXFileReference; name = "CroissantOne-Regular.ttf"; path = "../Assets/fonts/CroissantOne-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		B96F4E34FFA542A2A271DBCC /* SFPro-Regular.ttf */ = {isa = PBXFileReference; name = "SFPro-Regular.ttf"; path = "../Assets/fonts/SFPro-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,6 +171,8 @@
 				BBB58A8300D14BCAAF20F9EC /* Montserrat-Light.ttf */,
 				08058E4D9AB54BEBB862A8BC /* Montserrat-Medium.ttf */,
 				02B6F43FA47545529EF74050 /* Montserrat-Regular.ttf */,
+				876C50DBE84544A0994E09CE /* CroissantOne-Regular.ttf */,
+				B96F4E34FFA542A2A271DBCC /* SFPro-Regular.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -273,6 +279,8 @@
 				50BC724AD23547248FB6E304 /* Montserrat-Light.ttf in Resources */,
 				DBEE5192B93847879D6601E9 /* Montserrat-Medium.ttf in Resources */,
 				BF8EF386F21C41C4B9C5AD0C /* Montserrat-Regular.ttf in Resources */,
+				F80100518A1F4FEAADA1C6C8 /* CroissantOne-Regular.ttf in Resources */,
+				F7ACCC0BEA064F18A0549CD4 /* SFPro-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

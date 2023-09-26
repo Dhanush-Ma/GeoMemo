@@ -1,56 +1,53 @@
-import {View, Text} from 'react-native';
+import {View, Text, useWindowDimensions} from 'react-native';
 import {useState, useEffect} from 'react';
 import FontText from './FontText';
-import {MotiView, MotiText} from 'moti';
+import {MotiView} from 'moti';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const ErrorModal = ({text, setError}) => {
-  const [progress, setProgress] = useState(0);
+  const {width} = useWindowDimensions();
+
+  const [isAnimating, setIsAnimating] = useState(true);
+
+  // Function to toggle the animation
+  const toggleAnimation = () => {
+    setIsAnimating(!isAnimating);
+  };
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      if (progress < 100) {
-        setProgress(prev => prev + 2);
-      }
-    }, 100);
+    // If isAnimating is true, the animation will continue
+    if (isAnimating) {
+      const timeout = setTimeout(() => {
+        toggleAnimation(); // Stop the animation after a certain duration
+        clearTimeout(timeout);
+      }, 5000); // Stop after 2 seconds (adjust the duration as needed)
+    }
+  }, [isAnimating]);
 
+  useEffect(() => {
     const interval = setInterval(() => {
       setError('');
-    }, 5100);
+    }, 6000);
 
     return () => {
       clearInterval(interval);
-      clearInterval(timer);
     };
   }, []);
-
   return (
     <MotiView
-      from={{translateY: -100}}
-      animate={{translateY: 0}}
-      transition={{
-        translateY: {
-          type: 'spring',
-        },
+      key={text}
+      from={{translateY: -200, translateX: width / 2}}
+      animate={{translateY: isAnimating ? 0 : -200, translateX: width / 2}}
+      style={{
+        width: width - 40,
+
+        left: '-45%',
       }}
-      exit={{
-        opacity: 0,
-        scale: 0.9,
-      }}
-      exitTransition={{
-        type: 'timing',
-        duration: 2500,
-      }}
-      className="bg-errorColor rounded-md w-full absolute top-10">
-      <View className="px-2 py-3">
-        <FontText className="text-center text-[20px]" weighst={'Bold'}>
-          {text}
-        </FontText>
-      </View>
-      {/* <View className="h-2 overflow-hidden">
-        <View
-          style={{width: `${progress}%`}}
-          className="bg-[#e09698] h-full rounded-bl-md"></View>
-      </View> */}
+      className="bg-errorColor rounded-md absolute top-10 px-6 py-3 flex flex-row justify-center items-center z-[100]">
+      <MaterialIcons name="error-outline" size={25} />
+      <FontText className="ml-3 text-justify text-[18px]" weight={'Medium'}>
+        {text}
+      </FontText>
     </MotiView>
   );
 };

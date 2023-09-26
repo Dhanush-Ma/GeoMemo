@@ -2,6 +2,10 @@
   "migIndex": 1,
   "data": [
     {
+      "path": "Assets/fonts/CroissantOne-Regular.ttf",
+      "sha1": "a00b3d0b6491ee5e8d76de54a2539bd056c6db8d"
+    },
+    {
       "path": "Assets/fonts/Montserrat-Bold.ttf",
       "sha1": "04052dc3b846609216de1e0cbcec337c6b6e74f6"
     },
@@ -20,6 +24,10 @@
     {
       "path": "Assets/fonts/Montserrat-Regular.ttf",
       "sha1": "de57aa03e4821fdbe6c34ec2c895e8b5c914e837"
+    },
+    {
+      "path": "Assets/fonts/SFPro-Regular.ttf",
+      "sha1": "b6ba3136179738aebe9b4bc6695fe42241f5cb9b"
     }
   ]
 }

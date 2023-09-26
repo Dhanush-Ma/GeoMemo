@@ -19,8 +19,8 @@ import auth from '@react-native-firebase/auth';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import {checkInitialFormErrors} from '../Utils/checkInitialFormErrors';
-import Otp from '../Components/Otp';
-import PhoneNumber from '../Components/PhoneNumber';
+import Otp from '../Components/Auth/Otp';
+import PhoneNumber from '../Components/Auth/PhoneNumber';
 import {useAuthContext} from '../Contexts/AuthContext';
 import updateAuthIdToStorage from '../Utils/updateAuthIdToStorage';
 
@@ -69,6 +69,9 @@ const PhoneAuth = ({navigation, route}) => {
         email,
         username,
         phoneNumber,
+        previous_messages: [],
+        favorites: [],
+        timeline: [],
       });
 
       await updateAuthIdToStorage(uid, setAuth);

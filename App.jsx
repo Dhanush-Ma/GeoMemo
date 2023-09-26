@@ -4,14 +4,18 @@ import {Text} from 'react-native';
 import AuthContextProvider from './Contexts/AuthContext';
 import UserContextProvider from './Contexts/UserContext';
 import RouterMain from './Router';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 function App() {
+  
   return (
-    <AuthContextProvider>
-      <UserContextProvider>
-        <RouterMain />
-      </UserContextProvider>
-    </AuthContextProvider>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <AuthContextProvider>
+        <UserContextProvider>
+          <RouterMain />
+        </UserContextProvider>
+      </AuthContextProvider>
+    </GestureHandlerRootView>
   );
 }
 

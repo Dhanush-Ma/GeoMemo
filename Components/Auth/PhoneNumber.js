@@ -8,8 +8,8 @@ import {
   Keyboard,
 } from 'react-native';
 import PhoneInput from 'react-native-phone-number-input';
-import FontText from './FontText';
-import ErrorModal from './ErrorModal';
+import FontText from '../FontText';
+import ErrorModal from '../ErrorModal';
 
 const PhoneNumber = ({
   error,
@@ -24,7 +24,7 @@ const PhoneNumber = ({
       <View className="flex items-center justify-center mb-5" height={260}>
         <Image
           style={{flex: 1}}
-          source={require('../Assets/Phone.png')}
+          source={require('../../Assets/Phone.png')}
           resizeMode="contain"
         />
       </View>

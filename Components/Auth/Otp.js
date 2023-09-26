@@ -9,9 +9,9 @@ import {
   Keyboard,
   TextInput,
 } from 'react-native';
-import FontText from './FontText';
+import FontText from '../FontText';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
-import ErrorModal from './ErrorModal';
+import ErrorModal from '../ErrorModal';
 
 const Otp = ({
   phoneNumber,
@@ -44,7 +44,7 @@ const Otp = ({
       <View className="flex items-center justify-center mb-5" height={260}>
         <Image
           style={{flex: 1}}
-          source={require('../Assets/Otp.png')}
+          source={require('../../Assets/Otp.png')}
           resizeMode="contain"
         />
       </View>

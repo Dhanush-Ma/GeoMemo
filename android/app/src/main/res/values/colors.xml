@@ -1,0 +1,11 @@
+
+  <resources>
+    <color name="background">#131417</color>
+    <item  name="blue"  type="color">#131417
+    </item>
+    <color name="white">#FFF</color>
+
+    <integer-array  name="androidcolors">
+    <item>@color/blue</item>
+    </integer-array>
+  </resources>
