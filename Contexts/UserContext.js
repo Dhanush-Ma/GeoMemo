@@ -20,13 +20,28 @@ const UserContextProvider = props => {
 
   const [alertMessageModal] = useState({
     alertMessageModalRef: useRef(null),
-    alertMessageModalSnapPoints: useMemo(() => ['45%', '85%'], []),
+    alertMessageModalSnapPoints: useMemo(() => ['95%'], []),
     handleAlertMessageModal: useCallback((currRef, flag) => {
       if (flag === 'close') {
         currRef.current?.dismiss();
         return;
       }
 
+      currRef.current?.present();
+    }, []),
+  });
+
+  const [uploadPhotoModal] = useState({
+    uploadPhotoModalRef: useRef(null),
+    uploadPhotoModalSnapPoints: useMemo(() => ['100%'], []),
+    handleUploadPhotoModal: useCallback((currRef, flag, imageUri) => {
+      if (flag === 'close') {
+        currRef.current?.dismiss();
+        return;
+      }
+
+      console.log(imageUri);
+      currRef.imageUri = imageUri;
       currRef.current?.present();
     }, []),
   });
@@ -46,8 +61,21 @@ const UserContextProvider = props => {
 
   const [addToFavModal] = useState({
     addToFavModalRef: useRef(null),
-    addToFavModalSnapPoints: useMemo(() => ['35%'], []),
+    addToFavModalSnapPoints: useMemo(() => ['65%'], []),
     handleAddToFavModal: useCallback((currRef, flag) => {
+      if (flag === 'close') {
+        currRef.current?.dismiss();
+        return;
+      }
+
+      currRef.current?.present();
+    }, []),
+  });
+
+  const [scheduleMessageModal] = useState({
+    scheduleMessageModalRef: useRef(null),
+    scheduleMessageModalSnapPoints: useMemo(() => ['95%'], []),
+    handleScheduleMessageModal: useCallback((currRef, flag) => {
       if (flag === 'close') {
         currRef.current?.dismiss();
         return;
@@ -97,7 +125,9 @@ const UserContextProvider = props => {
             alertMessageModal,
             addToFavModal,
             viewFavModal,
+            scheduleMessageModal,
             currentAlert,
+            uploadPhotoModal,
             setCurrentAlert,
             coords,
             setCoords,

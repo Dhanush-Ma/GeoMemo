@@ -4,6 +4,8 @@ import {
   StatusBar,
   Pressable,
   KeyboardAvoidingView,
+  ScrollView,
+  RefreshControl,
 } from 'react-native';
 import {
   checkMultiple,
@@ -20,14 +22,22 @@ import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import MessageInfoBottomModal from '../Components/Modals/MessageInfoBottomModal';
 import AddToFavBottomModal from '../Components/Modals/AddToFavBottomModal';
 import ViewFavorites from '../Components/Modals/ViewFavoritesModal';
+import ScheduleMessageBottomModal from '../Components/Modals/ScheduleMessageBottomModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Geolocation from 'react-native-geolocation-service';
-import PushNotification from 'react-native-push-notification';
-import checkUserReachedMessageLocation from '../Utils/checkUserReachedMessageLocation';
-import snedMessageToUser from '../Utils/sendMessageToUser';
 import FontText from '../Components/FontText';
-import getFormattedDate from '../Utils/getFormattedDate';
-import BackgroundLocation
+import backgroundLoaction from '../BackgroundLogic/BackgroudLocation';
+import AppLoading from '../Screens/AppLoading';
+import {checkPermission} from 'react-native-contacts';
+import ShowProfileImage from '../Components/User/ShowProfileImage';
+
+ReactNativeForegroundService.start({
+  id: 1244,
+  title: 'GeoMemo',
+  message: 'Accessing Background Location',
+  icon: 'ic_launcher_round',
+  largeIcon: 'ic_launcher_round',
+});
 
 const UserStack = () => {
   const {
@@ -38,42 +48,51 @@ const UserStack = () => {
     setUserLocation,
     addToFavModal,
     viewFavModal,
+    scheduleMessageModal,
     setCurrentAlert,
+    uploadPhotoModal,
   } = useUserContext();
   const {auth, setAuth} = useAuthContext();
-  const [permissions, setPermissions] = useState(true);
+  const [permissions, setPermissions] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const {alertMessageModalRef, alertMessageModalSnapPoints} = alertMessageModal;
   const {addToFavModalRef, addToFavModalSnapPoints} = addToFavModal;
   const {viewFavModalRef, viewFavModalSnapPoints} = viewFavModal;
+  const {uploadPhotoModalRef, uploadPhotoModalSnapPoints} = uploadPhotoModal;
+  const {scheduleMessageModalRef, scheduleMessageModalSnapPoints} =
+    scheduleMessageModal;
 
-  useEffect(() => {
+  const onRefresh = () => {
+    requestPermissions();
+  };
+
+  const requestPermissions = async () => {
     const permissionsToRequest = [
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION,
       PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
       PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
       PermissionsAndroid.PERMISSIONS.SEND_SMS,
     ];
 
-    const requestPermissions = async () => {
-      const status = await checkMultiple(permissionsToRequest);
+    const status = await requestMultiple(permissionsToRequest);
 
-      const deniedPermissions = Object.entries(status).filter(
-        ([_, permissionStatus]) => permissionStatus === 'denied',
-      );
+    const deniedPermissions = Object.entries(status).filter(
+      ([_, permissionStatus]) => permissionStatus === 'denied',
+    );
 
-      deniedPermissions.forEach(async ([permission]) => {
-        const permissionStatus = await requestMultiple([permission]);
-        console.log(permissionStatus);
-      });
-      if (deniedPermissions.length !== 0) {
-        setPermissions(false);
-      }
+    if (deniedPermissions.length === 0) {
+      setLoading(false);
+      setPermissions(true);
+    } else {
+      setLoading(false);
+    }
+  };
 
-      console.log(status);
-    };
-
+  useEffect(() => {
     requestPermissions();
   }, []);
 
@@ -81,131 +100,8 @@ const UserStack = () => {
     try {
       ReactNativeForegroundService.add_task(
         () => {
-          //console.log('Foreground Service ');
           Geolocation.getCurrentPosition(
-            async position => {
-              //console.log('Process....');
-              //console.log(new Date().toLocaleTimeString());
-              // console.log(position.coords)
-              const {latitude, longitude} = position.coords;
-              //setUserLocation({lat: latitude, lng: longitude});
-              let messageInfo = await AsyncStorage.getItem('CURRENT_ALERT');
-              messageInfo =
-                messageInfo !== null ? JSON.parse(messageInfo) : null;
-
-              // check user reached the location
-              if (
-                messageInfo &&
-                checkUserReachedMessageLocation(
-                  latitude,
-                  longitude,
-                  messageInfo.lat,
-                  messageInfo.lng,
-                )
-              ) {
-                try {
-                  console.log('Process Mesg to user started');
-                  await snedMessageToUser(
-                    messageInfo.contact,
-                    messageInfo.message,
-                  );
-                  const removedMessage = {
-                    ...messageInfo,
-                    status: 'Success',
-                    timeStamp: Date.now(),
-                  };
-                  await firestore()
-                    .collection('Users')
-                    .doc(auth)
-                    .update({
-                      previous_messages:
-                        firestore.FieldValue.arrayUnion(removedMessage),
-                    });
-                  console.log('Process Msg send to DB');
-
-                  AsyncStorage.removeItem('CURRENT_ALERT');
-                  setCurrentAlert(null);
-                  console.log('Process Msg removed from current alert.');
-
-                  // Send PUSH notification to user
-                  PushNotification.localNotification({
-                    channelId: 'GeoMemo',
-                    title: 'Message sent',
-                    message: `Your schedule message to ${messageInfo.contact.displayName} is sent successfully`,
-                    playSound: true,
-                  });
-                  console.log('Process Msg: Notification finished');
-
-                  console.log('Process Msg to user completed');
-                } catch (error) {
-                  await AsyncStorage.mergeItem('ERROR', JSON.stringify(error));
-                }
-              }
-
-              // update every location to AsyncStorage
-              let locationInfo = await AsyncStorage.getItem('LOCATION_INFO');
-              locationInfo =
-                locationInfo !== null ? JSON.parse(locationInfo) : null;
-              if (locationInfo !== null) {
-                //console.log(locationInfo);
-                const lastLocation = locationInfo[locationInfo.length - 1];
-                if (
-                  lastLocation.latitude !== latitude &&
-                  lastLocation.longitude !== longitude
-                ) {
-                  // update new location
-                  locationInfo.push({
-                    latitude,
-                    longitude,
-                    timeStamp: new Date(),
-                  });
-                  await AsyncStorage.setItem(
-                    'LOCATION_INFO',
-                    JSON.stringify(locationInfo),
-                  );
-                }
-                //console.log(locationInfo.length);
-              } else {
-                const value = JSON.stringify([
-                  {
-                    latitude,
-                    longitude,
-                    timeStamp: new Date(),
-                  },
-                ]);
-                await AsyncStorage.setItem('LOCATION_INFO', value);
-              }
-
-              // check if today date is over
-              const storedDate = await AsyncStorage.getItem('TODAY_DATE');
-              const todayDate = new Date().getDate();
-              if (storedDate != todayDate) {
-                console.log('here');
-                const currentDate = new Date();
-                const yesterdayDate = new Date(currentDate);
-                yesterdayDate.setDate(currentDate.getDate() - 1);
-                const formattedDate = getFormattedDate(yesterdayDate);
-
-                await AsyncStorage.setItem(
-                  'TODAY_DATE',
-                  JSON.stringify(todayDate),
-                );
-
-                let locationInfo = await AsyncStorage.getItem('LOCATION_INFO');
-                locationInfo = JSON.parse(locationInfo);
-                await firestore()
-                  .collection('Users')
-                  .doc(auth)
-                  .update({
-                    timeline: firestore.FieldValue.arrayUnion({
-                      date: formattedDate,
-                      locationInfo: locationInfo,
-                    }),
-                  });
-                await AsyncStorage.removeItem('LOCATION_INFO');
-              }
-              // console.log('Process End....');
-            },
+            position => backgroundLoaction(position, auth, setCurrentAlert),
             error => {
               console.warn(error);
             },
@@ -217,20 +113,19 @@ const UserStack = () => {
               enableHighAccuracy: true,
               timeout: 15000,
               maximumAge: 10000,
-              distanceFilter: 100,
+              distanceFilter: 0,
             },
           );
         },
         {
-          delay: 10000,
+          delay: 30000,
           onLoop: true,
           taskId: 'com.supersami.geoMemo',
-          onError: e => console.log('Error logging:', e),
+          onError: e => console.log('Foreground Service - Error logging:', e),
+          onSuccess: () => console.log('Foreground service started'),
         },
       );
     } catch (error) {
-      AsyncStorage.mergeItem('ERROR', JSON.stringify(error));
-
       console.log('error: ', error);
     }
   }, []);
@@ -240,57 +135,70 @@ const UserStack = () => {
       .collection('Users')
       .doc(auth)
       .onSnapshot(documentSnapshot => {
-        // console.log('User data: ', documentSnapshot.data());
-        console.log('user data');
         setUser(documentSnapshot.data());
       });
 
     return () => database_subscriber();
   }, [auth]);
 
+  if (loading) return <AppLoading />;
+
   if (!permissions) {
     return (
-      <View className="flex-1 bg-primaryColor justify-center items-center">
-        <StatusBar backgroundColor="#131417" />
-        <View className="w-[90%] h-[200px] bg-accentColor2 rounded-lg flex justify-center items-center px-2">
-          <FontText weight={'Medium'} className="text-xl text-center ">
-            To provide you with the best app experience, we require your
-            permission to access.
-          </FontText>
-          <Pressable
-            onPress={() => {
-              openSettings();
-            }}>
-            <View className="mt-5 bg-primaryColor px-5 py-4 rounded-full">
-              <FontText weight="Bold" className="">
-                GRANT PERMISSIONS
-              </FontText>
-            </View>
-          </Pressable>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        className="flex-1">
+        <View className="flex-1 h-screen bg-primaryColor justify-center items-center">
+          <View
+            style={{top: StatusBar.currentHeight + 10}}
+            className="absolute">
+            <FontText weight={'Bold'} className="text-white text-xs">
+              Pull down to refresh
+            </FontText>
+          </View>
+          <StatusBar backgroundColor="#131417" />
+          <View className="w-[90%] h-[250px] bg-accentColor2 rounded-lg flex justify-center items-center px-2">
+            <FontText weight={'Medium'} className="text-xl text-center ">
+              To provide you with the best app experience, we require your
+              permission to access the locattion all the time.
+            </FontText>
+            <Pressable
+              onPress={() => {
+                openSettings();
+              }}>
+              <View className="mt-5 bg-primaryColor px-5 py-4 rounded-full">
+                <FontText weight="Bold" className="">
+                  GRANT PERMISSIONS
+                </FontText>
+              </View>
+            </Pressable>
+          </View>
         </View>
-      </View>
+      </ScrollView>
     );
   }
 
   return (
     <>
       <BottomSheetModalProvider>
-        <View className="flex-1 bg-primaryColor">{user && <BottomTab />}</View>
+        <View className="flex-1 bg-primaryColor relative">
+          {user && <BottomTab />}
+        </View>
         {/* Set Messgae Modal */}
-        {
-          <BottomSheetModal
-            backgroundStyle={{
-              backgroundColor: '#131417',
-            }}
-            handleIndicatorStyle={{
-              backgroundColor: '#fff',
-            }}
-            ref={alertMessageModalRef}
-            index={0}
-            snapPoints={alertMessageModalSnapPoints}>
-            <MessageInfoBottomModal />
-          </BottomSheetModal>
-        }
+        <BottomSheetModal
+          backgroundStyle={{
+            backgroundColor: '#131417',
+          }}
+          handleIndicatorStyle={{
+            backgroundColor: '#fff',
+          }}
+          ref={alertMessageModalRef}
+          index={0}
+          snapPoints={alertMessageModalSnapPoints}>
+          <MessageInfoBottomModal />
+        </BottomSheetModal>
         {/* Add To Fav Modal */}
         <BottomSheetModal
           backgroundStyle={{
@@ -316,6 +224,32 @@ const UserStack = () => {
           index={0}
           snapPoints={viewFavModalSnapPoints}>
           <ViewFavorites />
+        </BottomSheetModal>
+        {/* {Upload Photo Modal} */}
+        <BottomSheetModal
+          backgroundStyle={{
+            backgroundColor: '#131417',
+          }}
+          handleIndicatorStyle={{
+            backgroundColor: '#fff',
+          }}
+          ref={uploadPhotoModalRef}
+          index={0}
+          snapPoints={uploadPhotoModalSnapPoints}>
+          <ShowProfileImage />
+        </BottomSheetModal>
+        {/* {Schedule Message Modal} */}
+        <BottomSheetModal
+          backgroundStyle={{
+            backgroundColor: '#131417',
+          }}
+          handleIndicatorStyle={{
+            backgroundColor: '#fff',
+          }}
+          ref={scheduleMessageModalRef}
+          index={0}
+          snapPoints={scheduleMessageModalSnapPoints}>
+          <ScheduleMessageBottomModal />
         </BottomSheetModal>
       </BottomSheetModalProvider>
     </>

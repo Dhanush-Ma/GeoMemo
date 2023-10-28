@@ -3,11 +3,10 @@ import React, {useState} from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Contacts from './Contacts';
 import FontText from '../FontText';
-const Dropdown = ({data, onFocus, onChange, value}) => {
+const Dropdown = ({data, onChange, value}) => {
   const [showContacts, setShowContacts] = useState(false);
 
   const handleOnPress = () => {
-    onFocus();
     setShowContacts(!showContacts);
   };
 

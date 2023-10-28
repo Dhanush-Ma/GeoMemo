@@ -11,6 +11,7 @@ import {
   TouchableWithoutFeedback,
   ActivityIndicator,
   Image,
+  Keyboard,
 } from 'react-native';
 import {SvgUri} from 'react-native-svg';
 import {useState, useEffect} from 'react';
@@ -39,6 +40,7 @@ const SignUp = ({navigation}) => {
   };
 
   const handleSubmit = async () => {
+    Keyboard.dismiss();
     setLoading(true);
     const error = checkInitialFormErrors(formData);
     if (error) {
@@ -73,107 +75,108 @@ const SignUp = ({navigation}) => {
   return (
     <SafeAreaView>
       <StatusBar backgroundColor="#131417" />
-      <KeyboardAvoidingView
-        behavior="padding"
-        width={width}
-        height={height}
-        className="bg-primaryColor flex items-center px-5 justify-center">
+      <KeyboardAvoidingView behavior="position">
         <View
-          className="flex items-center justify-center mb-5"
-          width={250}
-          height={250}>
-          <Image
-            style={{width: '100%', height: '100%'}}
-            source={require('../../Assets/signup.gif')}
-            resizeMode="contain"
-          />
-        </View>
-        <View className="flex justify-center gap-y-6  w-[95%]">
-          <FontText className="text-white text-center text-xl">
-            Let's get started to explore GeoMemo
-          </FontText>
-          <View className="flex flex-row w-full border-2 border-accentColor2 rounded-[14px] justify-between items-center px-2">
-            <TextInput
-              onChangeText={text => handleChange(text, 'username')}
-              className="text-textColor w-[85%]"
-              cursorColor={'white'}
-              style={[{fontFamily: `Montserrat-Regular`}]}
-              placeholder="Username"
-              placeholderTextColor="white"
-              keyboardType="default"
+          width={width}
+          height={height}
+          className="bg-primaryColor flex items-center px-5 justify-center">
+          <View
+            className="flex items-center justify-center mb-5"
+            width={width}
+            height={height * 0.28}>
+            <Image
+              style={{width: '100%', height: '100%'}}
+              source={require('../../Assets/signup.gif')}
+              resizeMode="contain"
             />
-            <FeatherIcon name="user" size={20} color="#fff" />
           </View>
-          <View className="flex flex-row w-full border-2 border-accentColor2 rounded-[14px] justify-between items-center px-2">
-            <TextInput
-              onChangeText={text => handleChange(text, 'email')}
-              className="text-textColor w-[85%]"
-              cursorColor={'white'}
-              style={[{fontFamily: `Montserrat-Regular`}]}
-              placeholder="Email"
-              placeholderTextColor="white"
-              keyboardType="email-address"
-            />
-            <FeatherIcon name="mail" size={20} color="#fff" />
-          </View>
-          <View className="flex flex-row w-full border-2 border-accentColor2 rounded-[14px] justify-between items-center px-2">
-            <TextInput
-              onChangeText={text => handleChange(text, 'password')}
-              className="text-textColor w-[85%]"
-              cursorColor={'white'}
-              style={[{fontFamily: `Montserrat-Regular`}]}
-              placeholder="Password"
-              placeholderTextColor="white"
-              keyboardType="default"
-              secureTextEntry={!showPass}
-            />
-            {showPass ? (
-              <FontAwesome5Icon
-                onPress={() => setShowPass(false)}
-                name="eye"
-                size={20}
-                color="#fff"
+          <View className="flex justify-center gap-y-6  w-[95%]">
+            <FontText className="text-white text-center text-xl">
+              Let's get started to explore GeoMemo
+            </FontText>
+            <View className="flex flex-row w-full border-2 border-accentColor2 rounded-[14px] justify-between items-center px-2">
+              <TextInput
+                onChangeText={text => handleChange(text, 'username')}
+                className="text-textColor w-[85%]"
+                cursorColor={'white'}
+                style={[{fontFamily: `Montserrat-Regular`}]}
+                placeholder="Username"
+                placeholderTextColor="white"
+                keyboardType="default"
               />
-            ) : (
-              <FontAwesome5Icon
-                onPress={() => setShowPass(true)}
-                name="eye-slash"
-                size={20}
-                color="#fff"
+              <FeatherIcon name="user" size={20} color="#fff" />
+            </View>
+            <View className="flex flex-row w-full border-2 border-accentColor2 rounded-[14px] justify-between items-center px-2">
+              <TextInput
+                onChangeText={text => handleChange(text, 'email')}
+                className="text-textColor w-[85%]"
+                cursorColor={'white'}
+                style={[{fontFamily: `Montserrat-Regular`}]}
+                placeholder="Email"
+                placeholderTextColor="white"
+                keyboardType="email-address"
               />
-            )}
-          </View>
-          <TouchableOpacity className="w-full" onPress={handleSubmit}>
-            <View className="bg-accentColor2 rounded-lg w-full py-4">
-              {loading ? (
-                <ActivityIndicator size="small" color="#fff" />
+              <FeatherIcon name="mail" size={20} color="#fff" />
+            </View>
+            <View className="flex flex-row w-full border-2 border-accentColor2 rounded-[14px] justify-between items-center px-2">
+              <TextInput
+                onChangeText={text => handleChange(text, 'password')}
+                className="text-textColor w-[85%]"
+                cursorColor={'white'}
+                style={[{fontFamily: `Montserrat-Regular`}]}
+                placeholder="Password"
+                placeholderTextColor="white"
+                keyboardType="default"
+                secureTextEntry={!showPass}
+              />
+              {showPass ? (
+                <FontAwesome5Icon
+                  onPress={() => setShowPass(false)}
+                  name="eye"
+                  size={20}
+                  color="#fff"
+                />
               ) : (
-                <FontText
-                  weight="Bold"
-                  className="text-center"
-                  style={{color: 'white'}}>
-                  SIGN UP
-                </FontText>
+                <FontAwesome5Icon
+                  onPress={() => setShowPass(true)}
+                  name="eye-slash"
+                  size={20}
+                  color="#fff"
+                />
               )}
             </View>
-          </TouchableOpacity>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              console.log('here');
-              navigation.navigate('Login');
-            }}>
-            <View className="mt-3">
-              <FontText className="text-white text-center italic text-[18px]">
-                Already have an account?{' '}
-                <FontText className="italic text-accentColor2 font-bold">
-                  Login here
+            <TouchableOpacity className="w-full" onPress={handleSubmit}>
+              <View className="bg-accentColor2 rounded-lg w-full py-4">
+                {loading ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <FontText
+                    weight="Bold"
+                    className="text-center"
+                    style={{color: 'white'}}>
+                    SIGN UP
+                  </FontText>
+                )}
+              </View>
+            </TouchableOpacity>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                console.log('here');
+                navigation.navigate('Login');
+              }}>
+              <View className="mt-3">
+                <FontText className="text-white text-center italic text-[18px]">
+                  Already have an account?{' '}
+                  <FontText className="italic text-accentColor2 font-bold">
+                    Login here
+                  </FontText>
                 </FontText>
-              </FontText>
-            </View>
-          </TouchableWithoutFeedback>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
         </View>
-        {formError && <ErrorModal text={formError} setError={setFormError} />}
       </KeyboardAvoidingView>
+      {formError && <ErrorModal text={formError} setError={setFormError} />}
     </SafeAreaView>
   );
 };

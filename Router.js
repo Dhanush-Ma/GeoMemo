@@ -11,7 +11,20 @@ const RouterMain = () => {
   const {auth, appLoading, showOnBoard} = useAuthContext();
 
   useEffect(() => {
-    AsyncStorage.setItem('TODAY_DATE', JSON.stringify(new Date().getDate()));
+    const setDate = async () => {
+      const isDateSet = await AsyncStorage.getItem('TODAY_DATE');
+
+      if (!isDateSet) {
+        return;
+      }
+
+      await AsyncStorage.setItem(
+        'TODAY_DATE',
+        JSON.stringify(new Date().getDate()),
+      );
+    };
+
+    setDate();
   }, []);
 
   if (appLoading) {

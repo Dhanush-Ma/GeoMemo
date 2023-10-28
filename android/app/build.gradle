@@ -113,13 +113,15 @@ android {
 }
 
 dependencies {
+    
     // The version of react-native is set by the React Native Gradle Plugin
-
-    implementation 'com.google.firebase:firebase-analytics:17.3.0'
+    implementation 'com.google.d:d-analytics:17.3.0'
     implementation("com.facebook.react:react-android")
     implementation 'com.facebook.fresco:fresco:2.0.0'
-    
+    implementation project(':react-native-fs')
     implementation 'com.facebook.fresco:animated-gif:2.6.0'
+    implementation project(':react-native-splash-screen')
+
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.squareup.okhttp3', module:'okhttp'
@@ -131,6 +133,7 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+    
     
 
 }

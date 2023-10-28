@@ -8,7 +8,7 @@ const AppLoading = () => {
       height={height}
       className="bg-primaryColor justify-center items-center ">
       <StatusBar backgroundColor="#131417" />
-      <View className="w-[90%] h-[90%]">
+      <View className="w-[80%] h-[90%]">
         <Image
           source={require('../Assets/logo.jpg')}
           className="w-full h-full"

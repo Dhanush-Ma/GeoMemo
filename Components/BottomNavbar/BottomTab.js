@@ -6,7 +6,6 @@ import Messages from '../../Screens/UserScreens/Messages';
 
 import BottomTabStyles from './BottomTabStyles';
 import {View} from 'react-native';
-import LocationShare from '../../Screens/UserScreens/LocationShare';
 
 const Tab = createBottomTabNavigator();
 
@@ -15,6 +14,7 @@ const BottomTab = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
+        // unmountOnBlur: true,
       }}
       tabBar={props => <BottomTabStyles {...props} />}>
       <Tab.Group>

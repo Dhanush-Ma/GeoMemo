@@ -1,4 +1,4 @@
-import getDistanceFromLatLonInKm from './getDistanceBetweenTwoLocation';
+import getDistanceFromLatLonInKm from '../Utils/getDistanceBetweenTwoLocation';
 
 export default function checkUserReachedMessageLocation(
   lat1,

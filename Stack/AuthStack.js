@@ -4,7 +4,7 @@ const Stack = createNativeStackNavigator();
 
 import Login from '../Screens/AuthScreens/Login';
 import SignUp from '../Screens/AuthScreens/SignUp';
-import PhoneAuth from '../Screens/PhoneAuth';
+import PhoneAuth from '../Screens/AuthScreens/PhoneAuth';
 
 const AuthStack = () => {
   return (

@@ -9,6 +9,4 @@ export default function closeAllOpeningModals(
     'close',
   );
   viewFavModal?.handleViewFavModal(viewFavModal.viewFavModalRef, 'close');
-
-  console.log('gere');
 }

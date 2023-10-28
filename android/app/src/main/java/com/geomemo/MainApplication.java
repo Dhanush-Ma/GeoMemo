@@ -10,6 +10,8 @@ import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
 import java.util.List;
 import com.agontuk.RNFusedLocation.RNFusedLocationPackage;
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
+
 
 
 

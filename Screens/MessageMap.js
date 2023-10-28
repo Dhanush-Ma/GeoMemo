@@ -1,5 +1,13 @@
-import {View, Text, Button, StatusBar, Pressable} from 'react-native';
-import {useState, useMemo, useRef, useCallback} from 'react';
+import {
+  View,
+  Text,
+  Button,
+  StatusBar,
+  Pressable,
+  ScrollView,
+  BackHandler,
+} from 'react-native';
+import {useState, useMemo, useRef, useCallback, useEffect} from 'react';
 import {
   LatLng,
   LeafletView,
@@ -7,6 +15,7 @@ import {
   INFINITE_ANIMATION_ITERATIONS,
   MapShapeType,
 } from 'react-native-leaflet-view';
+import locationPoint from '../Assets/location-point.png';
 import FontText from '../Components/FontText';
 import MessageInfoBottomModal from '../Components/Modals/MessageInfoBottomModal';
 import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
@@ -17,10 +26,11 @@ import ErrorModal from '../Components/ErrorModal';
 import getDistanceFromLatLonInKm from '../Utils/getDistanceBetweenTwoLocation';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import MatrialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {MotiView} from 'moti';
 import closeAllOpeningModals from '../Utils/closeAllOpeningModals';
-// import {MotiPressable} from 'moti';
+
 const MessageMap = () => {
   const {
     coords,
@@ -29,31 +39,50 @@ const MessageMap = () => {
     addToFavModal,
     viewFavModal,
     currentAlert,
+    scheduleMessageModal,
     userCurrentLocation,
     error,
     setError,
+    user,
+    setShowHowToModal,
   } = useUserContext();
   const {alertMessageModalRef, handleAlertMessageModal} = alertMessageModal;
   const {addToFavModalRef, handleAddToFavModal} = addToFavModal;
   const {viewFavModalRef, handleViewFavModal} = viewFavModal;
+  // const {scheduleMessageModalRef, handleScheduleMessageModal} = scheduleMessdageModal;
 
   const [mapCenter, setMapCenter] = useState(true);
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        closeAllOpeningModals(alertMessageModal, addToFavModal, viewFavModal);
+
+        return () => {
+          backHandler.remove();
+        };
+      },
+    );
+  }, []);
+
   const onMessageReceived = message => {
-    if (message.event === 'onMapClicked' && currentAlert === null) {
-      //console.log(message);
+    if (message.event === 'onMapClicked') {
       closeAllOpeningModals(alertMessageModal, addToFavModal, viewFavModal);
       const newCoords = {
         lat: message.payload.touchLatLng.lat,
         lng: message.payload.touchLatLng.lng,
       };
 
+      if (showMenu) setShowMenu(false);
       setMapCenter(false);
       setCoords(newCoords);
     }
   };
+
+  const iterationCount = 'infinite';
 
   const mapMarkers = [
     {
@@ -61,6 +90,11 @@ const MessageMap = () => {
       position: coords,
       icon: '📍',
       size: [32, 32],
+      animation: {
+        duration: 1,
+        iterationCount,
+        type: AnimationType.JUMP,
+      },
     },
   ];
 
@@ -80,6 +114,11 @@ const MessageMap = () => {
       id: 'currentAlert',
       icon: '📨',
       size: [32, 32],
+      animation: {
+        duration: 0.4,
+        iterationCount,
+        type: AnimationType.WAGGLE,
+      },
     });
 
     mapShapes.push({
@@ -120,18 +159,17 @@ const MessageMap = () => {
     // }
     closeAllOpeningModals(undefined, addToFavModal, viewFavModal);
     setShowMenu(false);
-    console.log('here');
     setTimeout(() => {
       handleAlertMessageModal(alertMessageModalRef, 'open');
     }, 90);
   };
 
   const handleViewFavorites = async () => {
-    closeAllOpeningModals(alertMessageModal, addToFavModal, undefined);
-    setShowMenu(false);
-    setTimeout(() => {
-      handleViewFavModal(viewFavModalRef, 'open');
-    }, 90);
+    // closeAllOpeningModals(alertMessageModal, addToFavModal, undefined);
+    if (showMenu) setShowMenu(false);
+    // setTimeout(() => {
+    handleViewFavModal(viewFavModalRef, 'open');
+    // }, 90);
   };
 
   const handleAddToFavorites = () => {
@@ -139,6 +177,14 @@ const MessageMap = () => {
     setShowMenu(false);
     setTimeout(() => {
       handleAddToFavModal(addToFavModalRef, 'open');
+    }, 90);
+  };
+
+  const handleScheduleMessage = () => {
+    closeAllOpeningModals(alertMessageModal, undefined, viewFavModal);
+    setShowMenu(false);
+    setTimeout(() => {
+      handleScheduleMessageModal(scheduleMessageModalRef, 'open');
     }, 90);
   };
 
@@ -155,6 +201,11 @@ const MessageMap = () => {
       icon: <MaterialIcons name="favorite" size={30} color="white" />,
       handleFunction: handleViewFavorites,
     },
+    // {
+    //   desc: `Schedule Messages`,
+    //   icon: <MaterialIcons name="schedule-send" size={30} color="white" />,
+    //   handleFunction: handleScheduleMessage,
+    // },
     {
       desc: `Add Loaction to Favorites`,
       icon: <MaterialIcons name="add-comment" size={30} color="white" />,
@@ -165,6 +216,8 @@ const MessageMap = () => {
   return (
     <BottomSheetModalProvider>
       <View className="flex-1 relative">
+        <StatusBar translucent backgroundColor="transparent" />
+
         <LeafletView
           zoomControl={false}
           doDebug={false}
@@ -172,6 +225,11 @@ const MessageMap = () => {
           mapMarkers={mapMarkers}
           mapCenterPosition={mapCenter ? coords : null}
           mapShapes={mapShapes}
+          mapLayers={[
+            {
+              url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            },
+          ]}
         />
         <Pressable
           onPress={() => {
@@ -180,7 +238,7 @@ const MessageMap = () => {
           style={{
             top: StatusBar.currentHeight + 15,
           }}
-          className="absolute bg-accentColor2 right-5 p-2 rounded-full z-30 rounded-bl-none">
+          className="absolute bg-accentColor2 right-5 p-2 rounded-full rounded-bl-none">
           {showMenu ? (
             <MotiView
               from={{scale: 0}}

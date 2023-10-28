@@ -42,21 +42,36 @@ const OnBoardSliderItem = ({
             scale: 1,
           }}
           backgroundColor={backgroundColor}
-          transition={{}}
           width={width}
           height={height}
-          className={`py-10 pb-20 px-5 justify-start  items-center  relative`}>
-          <Text className="text-3xl absolute top-10" style={[{fontFamily: 'CroissantOne-Regular'}]}>GeoMemo</Text>
-          <LottieView
-            source={animation}
-            style={{width: width * 0.8, height: height * 0.5}}
-            autoPlay
-            loop
-            resizeMode="contain"
-          />
-          <FontText style={{color: textColor}} className="text-2xl text-center">
-            {text}
-          </FontText>
+          className={`py-10 pb-20 px-5 justify-center items-center  relative`}>
+          <Text
+            className="text-3xl absolute top-10"
+            style={[{fontFamily: 'CroissantOne-Regular'}]}>
+            GeoMemo
+          </Text>
+          <View className="flex gap-y-2">
+            <View
+              className="mx-auto"
+              style={{width: width * 0.8, height: height * 0.4}}>
+              <LottieView
+                source={animation}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  // marginHorizontal: 'auto',
+                }}
+                autoPlay
+                loop
+                resizeMode="contain"
+              />
+            </View>
+            <FontText
+              style={{color: textColor}}
+              className="text-2xl text-center">
+              {text}
+            </FontText>
+          </View>
           {id == 4 ? (
             <TouchableOpacity
               className="absolute bottom-20 translate-x-1/2"

@@ -1,57 +1,56 @@
 import {
   View,
   Text,
-  FlatList,
   TextInput,
   KeyboardAvoidingView,
   Pressable,
+  useWindowDimensions,
 } from 'react-native';
-import {ScrollView} from 'react-native-gesture-handler';
+import {ScrollView, FlatList} from 'react-native-gesture-handler';
 import FontText from '../FontText';
-import {useState} from 'react';
+import {useState, useMemo} from 'react';
 
 const Contacts = ({data, onChange, setShowContacts, value}) => {
   const [searchText, setSearchText] = useState('');
-  const filteredContacts = data.filter(item =>
-    item.displayName.toLowerCase().includes(searchText.toLowerCase()),
+  const {height} = useWindowDimensions();
+  const filteredContacts = useMemo(
+    () =>
+      data.filter(
+        item =>
+          item.displayName.toLowerCase().includes(searchText.toLowerCase()),
+        [searchText],
+      ),
+    [searchText],
   );
 
   return (
-    <KeyboardAvoidingView className="h-[65vh] absolute top-20 w-full z-30 bg-secondaryColor">
+    <KeyboardAvoidingView
+     
+      style={{height: height * 0.7}}
+      className="absolute top-20 w-full z-30 bg-secondaryColor">
       <TextInput
         onChangeText={text => setSearchText(text)}
         value={searchText}
         autoCapitalize="none"
         autoCorrect={false}
-        keyboardType="default"
         returnKeyType="done"
-        onSubmitEditing={() => {}}
         placeholder="Search..."
         caretHidden
         placeholderTextColor={'#FFF'}
         className="bg-secondaryColor1 rounded-md px-5 text-white mb-2 text-lg"
       />
-      <ScrollView className="h-[90%] ">
-        {searchText
-          ? filteredContacts.map((item, index) => (
-              <Item
-                item={item}
-                key={index}
-                onChange={onChange}
-                setShowContacts={setShowContacts}
-                value={value}
-              />
-            ))
-          : data.map((item, index) => (
-              <Item
-                item={item}
-                key={index}
-                onChange={onChange}
-                setShowContacts={setShowContacts}
-                value={value}
-              />
-            ))}
-      </ScrollView>
+      <FlatList
+        keyboardShouldPersistTaps="handled"
+        data={filteredContacts}
+        renderItem={({item}) => (
+          <Item
+            item={item}
+            onChange={onChange}
+            setShowContacts={setShowContacts}
+            value={value}
+          />
+        )}
+      />
     </KeyboardAvoidingView>
   );
 };

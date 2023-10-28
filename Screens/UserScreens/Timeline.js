@@ -10,12 +10,15 @@ import CalendarModal from '../../Components/User/Calendar';
 import getFormattedDate from '../../Utils/getFormattedDate';
 import {useUserContext} from '../../Contexts/UserContext';
 import getFormattedDateWithDay from '../../Utils/getFormattedDateWithDay';
+import {firebase} from '@react-native-firebase/firestore';
+import FocusAwareStatusBar from '../../Components/FocusedAwareStatusBar';
 
 const Timeline = () => {
   const [date, setDate] = useState(getFormattedDate(new Date()));
   const [locationData, setLocationData] = useState([]);
   const [showCalendar, setShowCalendar] = useState(false);
   const {userCurrentLocation, user} = useUserContext();
+  const [loc, setLoc] = useState([]);
 
   useEffect(() => {
     const getLocationInfo = async () => {
@@ -45,10 +48,25 @@ const Timeline = () => {
           lat: item.latitude,
           lng: item.longitude,
         }));
+
         setLocationData(modifiedData);
       }
     };
 
+    const getData = async id => {
+      const locData = await firebase.firestore().collection('Users').doc(id);
+      const timelineArr = (await locData.get()).data().timeline;
+      const arr = timelineArr[timelineArr.length - 1].locationInfo;
+      console.log(arr.length);
+      const data = arr.map(item => ({
+        lat: item.latitude,
+        lng: item.longitude,
+      }));
+      setLocationData(data);
+      return;
+    };
+
+    //getData(id)
     getLocationInfo();
   }, [date]);
 
@@ -56,11 +74,11 @@ const Timeline = () => {
     return getTotalDistance(locationData);
   }, [locationData]);
 
-
   return (
     <>
       {
         <View className="bg-primaryColor flex justify-between flex-1 relative">
+          <FocusAwareStatusBar translucent backgroundColor="transparent"   />
           <View className="flex flex-1 bg-secondaryColor1">
             <LeafletView
               zoomControl={false}
@@ -76,6 +94,11 @@ const Timeline = () => {
                   color: '#8766eb',
                   id: '5',
                   positions: [locationData],
+                },
+              ]}
+              mapLayers={[
+                {
+                  url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                 },
               ]}
             />

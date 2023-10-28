@@ -15,14 +15,14 @@ export default [
   //   backgroundColor: '#8766eb',
   //   arrowBackground: '#000',
   // },
-  {
-    id: 3,
-    text: 'Stay connected by effortlessly sharing your real-time location securely, so everyone can remain informed and in touch.',
-    animation: require('../../Assets/lottie/lo3.json'),
-    textColor: '#fff',
-    backgroundColor: '#131417',
-    arrowBackground: '#8766eb',
-  },
+  // {
+  //   id: 3,
+  //   text: 'Stay connected by effortlessly sharing your real-time location securely, so everyone can remain informed and in touch.',
+  //   animation: require('../../Assets/lottie/lo3.json'),
+  //   textColor: '#fff',
+  //   backgroundColor: '#131417',
+  //   arrowBackground: '#8766eb',
+  // },
   {
     id: 4,
     text: 'Take a trip down memory lane and explore your timeline of cherished moments.',

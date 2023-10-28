@@ -5,12 +5,14 @@ module.exports = {
     './Screens/*.{js,jsx,ts,tsx}',
     './Screens/AuthScreens/*.{js,jsx,ts,tsx}',
     './Screens/UserScreens/*.{js,jsx,ts,tsx}',
+    './Screens/UserScreens/SettingsScreens/*.{js,jsx,ts,tsx}',
     './Components/*.{js,jsx,ts,tsx}',
     './Components/*/**.{js,jsx,ts,tsx}',
     './Components/Auth/*.{js,jsx,ts,tsx}',
     './Components/User/*.{js,jsx,ts,tsx}',
     './Components/OnBoard/*.{js,jsx,ts,tsx}',
     './Components/Modals/*.{js,jsx,ts,tsx}',
+    './Components/Modals/HowToModal/*.{js,jsx,ts,tsx}',
     './Components/BottomNavbar/*.{js,jsx,ts,tsx}',
     './Stack/*.{js,jsx,ts,tsx}',
   ],
@@ -65,3 +67,4 @@ module.exports = {
   },
   plugins: ['nativewind/babel'],
 };
+

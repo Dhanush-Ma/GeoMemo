@@ -3,14 +3,15 @@ import FoundationIcons from 'react-native-vector-icons/Foundation';
 import IoniconsIcons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5Icons from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome6Icons from 'react-native-vector-icons/FontAwesome6';
+import FontText from '../FontText';
 
 function BottomTabStyles({state, descriptors, navigation}) {
   const icons = {
-    Home: {func: FoundationIcons, name: 'home'},
-    Messages: {func: FontAwesome6Icons, name: 'message'},
-    Timeline: {func: FontAwesome5Icons, name: 'route'},
+    Home: {func: FoundationIcons, name: 'home', label: 'Home'},
+    Messages: {func: FontAwesome6Icons, name: 'message', label: 'Messages'},
+    Timeline: {func: FontAwesome5Icons, name: 'route', label: 'Timeline'},
     // LocationShare: {func: FontAwesome6Icons, name: 'map-location-dot'},
-    Settings: {func: IoniconsIcons, name: 'settings'},
+    Settings: {func: IoniconsIcons, name: 'settings', label: 'Settings'},
   };
 
   return (
@@ -42,6 +43,7 @@ function BottomTabStyles({state, descriptors, navigation}) {
 
         const Icon = icons[label].func;
         const name = icons[label].name;
+        const labelName = icons[label].label;
 
         return (
           <Pressable
@@ -55,7 +57,10 @@ function BottomTabStyles({state, descriptors, navigation}) {
               backgroundColor: isFocused ? '#8766eb' : 'transparent',
             }}
             className="flex flex-1 justify-center items-center py-2  rounded-full h-[60px]">
-            <View>{<Icon name={name} size={25} color="white" />}</View>
+            <View className="flex justify-center items-center">
+              <Icon name={name} size={20} color="white" />
+              <FontText className="text-xs">{labelName}</FontText>
+            </View>
           </Pressable>
         );
       })}

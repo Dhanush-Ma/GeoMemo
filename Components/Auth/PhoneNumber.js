@@ -6,29 +6,31 @@ import {
   ActivityIndicator,
   Image,
   Keyboard,
+  useWindowDimensions,
 } from 'react-native';
 import PhoneInput from 'react-native-phone-number-input';
 import FontText from '../FontText';
-import ErrorModal from '../ErrorModal';
 
 const PhoneNumber = ({
-  error,
-  setError,
   handlePhoneNumber,
   loading,
   phoneNumber,
   setPhoneNumber,
 }) => {
+  const {width, height} = useWindowDimensions();
   return (
     <View className="flex h-full justify-center items-center">
-      <View className="flex items-center justify-center mb-5" height={260}>
+      <View
+        className="flex items-center justify-center mb-5"
+        width={width}
+        height={height * 0.28}>
         <Image
           style={{flex: 1}}
           source={require('../../Assets/Phone.png')}
           resizeMode="contain"
         />
       </View>
-      <FontText className="text-2xl text-center mb-5" weight="Bold">
+      <FontText className="text-2xl text-center mb-5" weight="Medium">
         One last step, enter your phone number to verify your account
       </FontText>
       <PhoneInput
@@ -58,12 +60,12 @@ const PhoneNumber = ({
           cursorColor: 'white',
           placeholderTextColor: 'white',
         }}
+        withDarkTheme
+        withShadow
         defaultCode="IN"
         onChangeFormattedText={text => {
           setPhoneNumber(text);
         }}
-        withDarkTheme
-        withShadow
       />
       <TouchableOpacity
         disabled={loading}
@@ -85,7 +87,6 @@ const PhoneNumber = ({
           )}
         </View>
       </TouchableOpacity>
-      {error && <ErrorModal text={error} setError={setError} />}
     </View>
   );
 };

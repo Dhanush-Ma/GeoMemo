@@ -1,4 +1,11 @@
-import {View, Text, StatusBar, Pressable, ScrollView} from 'react-native';
+import {
+  View,
+  Text,
+  StatusBar,
+  Pressable,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
 import {useEffect, useMemo, useState} from 'react';
 import FocusAwareStatusBar from '../../Components/FocusedAwareStatusBar';
 import {useUserContext} from '../../Contexts/UserContext';
@@ -13,6 +20,7 @@ import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import getFormattedTime from '../../Utils/getFormattedTime';
 import {useNavigation} from '@react-navigation/native';
+import {RefreshControl} from 'react-native-gesture-handler';
 
 const Messages = () => {
   const {auth} = useAuthContext();
@@ -25,19 +33,33 @@ const Messages = () => {
     user.previous_messages,
   );
 
+  useEffect(() => {
+    console.log("pop")
+    setPreviousMessages(user.previous_messages);
+  }, [user]);
+
+  const [removeMessageLoading, setRemoveMessageLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+
+  const onRefresh = async () => {
+    const currentAlertOnRefresh = await AsyncStorage.getItem('CURRENT_ALERT');
+    setCurrentAlert(JSON.parse(currentAlertOnRefresh));
+    setPreviousMessages(user.previous_messages);
+  };
 
   const messagedData = useMemo(() => {
     return previousMessages.sort((a, b) => b.timeStamp - a.timeStamp);
   }, [previousMessages]);
 
   const handleRemoveMessage = async () => {
+    setRemoveMessageLoading(true);
     const removedAlert = {
       ...currentAlert,
       status: 'Removed by you',
       timeStamp: Date.now(),
     };
 
-    const res = await firestore()
+    await firestore()
       .collection('Users')
       .doc(auth)
       .update({
@@ -46,7 +68,6 @@ const Messages = () => {
 
     await AsyncStorage.removeItem('CURRENT_ALERT');
     setCurrentAlert(null);
-    setPreviousMessages(prev => [...prev, removedAlert]);
   };
 
   const handleEditMessage = () => {
@@ -57,6 +78,18 @@ const Messages = () => {
   return (
     <>
       <ScrollView
+        refreshControl={
+          <RefreshControl
+            onRefresh={onRefresh}
+            refreshing={refresh}
+            colors={['#B37F0D', '#F3E676', '#B58111']}
+            tintColor="#fff"
+            title="Refreshing..."
+            titleColor="#fff"
+            progressBackgroundColor="#fff"
+            progressViewOffset={30}
+          />
+        }
         showsVerticalScrollIndicator={false}
         style={{paddingTop: StatusBar.currentHeight + 20}}
         className="bg-primaryColor flex-1 pb-5">
@@ -88,7 +121,8 @@ const Messages = () => {
                   <MotiView
                     from={{opacity: 1}} // Initial opacity
                     animate={{opacity: 0.8}} // Animated opacity
-                    transition={{loop: true, type: 'timing', duration: 500}}>
+                    transition={{loop: true, type: 'timing', duration: 500}}
+                    style={{elevation: 5}}>
                     <LinearGradient
                       colors={['#B37F0D', '#F3E676', '#B58111']}
                       start={{x: 0, y: 0}}
@@ -112,13 +146,17 @@ const Messages = () => {
                     <Pressable onPress={handleEditMessage}>
                       <AntDesignIcon name="edit" size={30} color="#121212" />
                     </Pressable>
-                    <Pressable onPress={handleRemoveMessage}>
-                      <IoniconsIcon
-                        name="remove-circle-outline"
-                        size={30}
-                        color="red"
-                      />
-                    </Pressable>
+                    {removeMessageLoading ? (
+                      <ActivityIndicator size={30} color="red" />
+                    ) : (
+                      <Pressable onPress={handleRemoveMessage}>
+                        <IoniconsIcon
+                          name="remove-circle-outline"
+                          size={30}
+                          color="red"
+                        />
+                      </Pressable>
+                    )}
                   </View>
                 </View>
               </View>
@@ -133,41 +171,45 @@ const Messages = () => {
           <View className="mb-10 bg-accentColor2 p-3 rounded-xl">
             <FontText
               style={{alignSelf: 'flex-start'}}
-              className="text-2xl text-primaryColor border-b-2 border-b-primaryColor w-max pb-1 mb-4"
+              className="text-2xl text-[#181818] border-b-2 border-b-black w-max pb-1 mb-4"
               weight={'Bold'}>
               Previous Messages
             </FontText>
             {previousMessages.length > 0 ? (
               <>
                 {messagedData.map((message, idx) => {
-                  const statusColor = message.status.includes('Removed')
+                  const statusColor = message.status.includes('Success')
+                    ? 'bg-successColor'
+                    : message.status.includes('Removed')
                     ? 'bg-errorColor'
-                    : 'bg-successColor';
-                  const statusText = message.status.includes('Removed')
+                    : 'bg-[#FFC107]';
+                  const statusText = message.status.includes('Success')
+                    ? 'text-black'
+                    : message.status.includes('Removed')
                     ? 'text-white'
                     : 'text-black';
 
                   return (
                     <View
                       key={idx}
-                      className="border-b-2 pb-4 border-b-primaryColor mb-4">
-                      <FontText weight={'Medium'} className="text-primaryColor">
+                      className="border-b-2 pb-4 border-b-secondaryColor1 mb-4">
+                      <FontText weight={'Medium'} className="text-[#000]">
                         {message.contact.displayName} (
                         {message.contact.phoneNumber})
                       </FontText>
                       <FontText
                         weight={'Medium'}
-                        className="text-primaryColor font-medium">
+                        className="text-[#000] font-medium">
                         {getFormattedTime(message.timeStamp)}
                       </FontText>
                       <FontText
                         weight={'Medium'}
-                        className="text-primaryColor text-lg mt-1 text-justify">
+                        className="text-[#000] text-lg leading-6 mt-1 text-justify">
                         {message.message}
                       </FontText>
                       <FontText
                         weight={'Bold'}
-                        style={{alignSelf: 'flex-start'}}
+                        style={{alignSelf: 'flex-start', elevation: 5}}
                         className={`${statusColor} p-2 rounded-md mt-2 ${statusText} text-left text-[10px] uppercase`}>
                         {message.status}
                       </FontText>
@@ -178,7 +220,7 @@ const Messages = () => {
             ) : (
               <FontText
                 weight={'Medium'}
-                className="text-[20px] text-black  mb-5">
+                className="text-[20px] text-white  mb-5">
                 No history of previous messages.
               </FontText>
             )}

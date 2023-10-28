@@ -18,6 +18,7 @@ const ViewFavorites = () => {
     setError,
     alertMessageModal,
     userCurrentLocation,
+    currentAlert,
   } = useUserContext();
   let {favorites} = user;
   const {viewFavModalRef, handleViewFavModal} = viewFavModal;
@@ -39,6 +40,15 @@ const ViewFavorites = () => {
   };
 
   const handleSetFavLocation = coords => {
+    if (currentAlert) {
+      handleViewFavModal(viewFavModalRef, 'close');
+      setTimeout(() => {
+        setError('Currently, you can set only one message!');
+      }, 50);
+
+      return;
+    }
+
     if (
       getDistanceFromLatLonInKm(
         userCurrentLocation.lat,
@@ -65,13 +75,19 @@ const ViewFavorites = () => {
     <View className="bg-primaryColor  p-7 rounded-xl justify-center items-center flex-1">
       {favorites.length > 0 ? (
         <>
-          <View className="bg-accentColor1  p-3 w-[200px] mx-auto rounded-md mb-5 flex flex-row items-center space-x-2 justify-center">
-            <Text
-              style={{fontFamily: 'SFPro-Regular'}}
-              className="text-lg font- text-center text-primaryColor">
-              FAVOURITES
-            </Text>
-            <MaterialIcons name="favorite" color="black" size={30} />
+          <View className="bg-accentColor1  p-3 w-full mx-auto rounded-md mb-5">
+            <View className="flex flex-row items-center space-x-2 justify-center mb-1">
+              <Text
+                style={{fontFamily: 'CroissantOne-Regular'}}
+                className="text-2xl text-center text-primaryColor">
+                FAVOURITES
+              </Text>
+              <MaterialIcons name="favorite" color="black" size={30} />
+            </View>
+            <FontText weight={"Medium"} className="text-xs text-primaryColor text-center">
+              Quickly compose messages for your preferred locations by clicking
+              on them.
+            </FontText>
           </View>
           <ScrollView
             alwaysBounceVertical={false}
@@ -90,15 +106,15 @@ const ViewFavorites = () => {
         </>
       ) : (
         <View className="w-full h-full flex justify-center items-center">
+          <FontText className="bg-accentColor2 p-2 rounded-md font-medium text-base w-full text-center">
+            Looks like you don't have any favorites yet.
+          </FontText>
           <LottieView
             source={require('../../Assets/lottie/empty.json')}
             style={{width: '100%', height: '80%'}}
             autoPlay
             loop
           />
-          <FontText className="bg-accentColor2 p-2 rounded-md font-medium text-base w-full text-center">
-            Looks like you don't have any favorites yet.
-          </FontText>
         </View>
       )}
     </View>

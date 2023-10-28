@@ -6,10 +6,11 @@ const CalendarModal = ({setDate, date, setShowCalendar}) => {
   const {width, height} = useWindowDimensions();
 
   return (
-    <View
+    <Pressable
+      onPress={() => setShowCalendar(false)}
       className="bg-[#121212]/50 absolute top-0 right-0 w-screen h-screen flex justify-center items-center"
       style={{width, height}}>
-      <View className="min-w-[80%]">
+      <View className="min-w-[80%] h-max overflow-hidden">
         <Calendar
           initialDate={date}
           onDayPress={day => {
@@ -26,8 +27,10 @@ const CalendarModal = ({setDate, date, setShowCalendar}) => {
           style={{
             borderWidth: 1,
             borderColor: 'gray',
-            height: 350,
+            height: "auto",
             borderRadius: 20,
+            padding: 15
+
           }}
           theme={{
             backgroundColor: '#ffffff',
@@ -41,7 +44,7 @@ const CalendarModal = ({setDate, date, setShowCalendar}) => {
           }}
         />
       </View>
-    </View>
+    </Pressable>
   );
 };
 

@@ -46,7 +46,6 @@ const MessageInfoBottomModal = () => {
 
   const handleMessage = async () => {
     if (coords.lat && coords.lng && contact.displayName && message) {
-      console.log(flag);
       let details = null;
       if (flag === 'edit') {
         details = {
@@ -73,12 +72,6 @@ const MessageInfoBottomModal = () => {
       setConfirmModal(true);
     }
   };
-
-  // const renderItem = item => {
-  //   return (
-
-  //   );
-  // };
 
   const contacts = useMemo(() => {
     return Contacts.getAll().then(data => {
@@ -120,50 +113,51 @@ const MessageInfoBottomModal = () => {
 
   if (loading) {
     return (
-      <View className="flex  justify-center items-center h-[50%] w-full">
-        <ActivityIndicator size={60} color="#8766eb" />
+      <View className="flex  justify-center items-center h-full w-full">
+        <ActivityIndicator size={60} color="#8766eb"  />
       </View>
     );
   }
-
   return (
     <>
       {data && (
-        <View className="bg-primaryColor p-7 pt-0 rounded-xl justify-center items-start h-[55%]">
+        <View className="bg-primaryColor p-7 rounded-xl justify-center items-start h-full">
           {confirmModal ? (
             <ConfirmModal />
           ) : (
-            <>
-              <Dropdown
-                value={contact}
-                data={data}
-                onFocus={() => {
-                  alertMessageModal.alertMessageModalRef.current.snapToIndex(1);
-                }}
-                onChange={item => {
-                  alertMessageModal.alertMessageModalRef.current.snapToIndex(0);
-                  console.log(item);
-                  setContact({
-                    displayName: item.displayName,
-                    phoneNumber: item.phoneNumber,
-                  });
-                }}
-              />
-              <TextInput
-                onChangeText={text => setMessage(text)}
-                className="text-textColor border-2 border-accentColor2 rounded-md px-3 w-full"
-                cursorColor={'white'}
-                style={[
-                  {fontFamily: `Montserrat-Regular`, textAlignVertical: 'top'},
-                ]}
-                placeholder="Message (Max 200 characters)"
-                placeholderTextColor="white"
-                maxLength={200}
-                keyboardType="default"
-                multiline={true}
-                numberOfLines={6}
-                value={message}
-              />
+            <View className="w-full h-full flex justify-between">
+              <View>
+                <Dropdown
+                  value={contact}
+                  data={data}
+                  onChange={item => {
+                    console.log("On vhnf")
+                    setContact({
+                      displayName: item.displayName,
+                      phoneNumber: item.phoneNumber,
+                    });
+                  }}
+                />
+                <TextInput
+                  onChangeText={text => setMessage(text)}
+                  className="text-textColor border-2 border-accentColor2 rounded-md px-3 w-full "
+                  cursorColor={'white'}
+                  style={[
+                    {
+                      fontFamily: `Montserrat-Regular`,
+                      textAlignVertical: 'top',
+                    },
+                  ]}
+                  placeholder="Message (Max 200 characters)"
+                  placeholderTextColor="white"
+                  maxLength={200}
+                  keyboardType="default"
+                  multiline={true}
+                  numberOfLines={23}
+                  value={message}
+                  onFocus={() => {}}
+                />
+              </View>
               <Pressable
                 onPress={handleMessage}
                 className="bg-accentColor2 rounded-md mt-5 p-2 w-full">
@@ -173,7 +167,7 @@ const MessageInfoBottomModal = () => {
                   SAVE
                 </FontText>
               </Pressable>
-            </>
+            </View>
           )}
         </View>
       )}
